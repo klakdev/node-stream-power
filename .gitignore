@@ -1,0 +1,7 @@
+#very large file
+very_large_file.mkv
+
+#node modules
+node_modules/
+
+.vscode/*
