@@ -1,1 +1,26 @@
 GET http://localhost:8081 HTTP/1.1
+
+
+####
+
+POST http://localhost:8081 HTTP/1.1
+Content-Type: application/json
+
+{
+  "logId": 12345,
+  "time": "24/09/2020 13:34.2323",
+  "hasClicked": true,
+  "itemId": "asdasd"
+}
+ 
+####
+
+POST http://localhost:8081 HTTP/1.1
+Content-Type: application/json
+
+{
+  "logId": 12345,
+  "time": "24/09/2020 13:32.2323",
+  "watchTime": "00:12.4334",
+  "itemId": "asdasd"
+}

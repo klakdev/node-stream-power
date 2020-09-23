@@ -8,7 +8,6 @@ class TransferObjects extends Transform {
 	constructor() {
 		super({
 			objectMode: true,
-	
 		});
 	}
 

@@ -1,8 +1,8 @@
 const { createServer } = require('http');
 const memoryUsage = require('./util/csv');
 
-//const FILE_PATH = "./very_large_file.mkv";
-const FILE_PATH = "./large_json.json";
+const FILE_PATH = "./very_large_file.mp4";
+//const FILE_PATH = "./large_json.json";
 
 const doSomeIo = {
 	sync: require("./methods/readFileSync"),
@@ -13,6 +13,7 @@ const doSomeIo = {
 	multiple: require("./methods/multiple"),
 	transform: require("./methods/transform"),
 	load_json: require("./methods/loadJson"),
+	kinesis: require("./methods/kinesisStyle"),
 };
 
 const methodName = process.argv[2];
@@ -23,5 +24,5 @@ if(!method) {
 }
 
 memoryUsage(methodName);
-createServer((req, res) => method(FILE_PATH, res))
-	.listen(8081, () => console.log("Server started"));
+createServer((req, res) =>  method(req, res, FILE_PATH))
+.listen(8081, () => console.log("Server started - " + methodName));

@@ -2,8 +2,8 @@ const { createReadStream } = require("fs");
 const ProgressBar = require('../util/progressBar');
 
 let totalStreams = 0;
-const totalMemory = 10 * 1024 * 1024;//10 MB
-const maxMemory = 1 * 1024 * 1024 ;//1MB
+const totalMemory = 0.03 * 1024 * 1024;//10 MB
+const maxMemory = 0.01 * 1024 * 1024 ;//1MB
 
 const getHighWaterMark = () => {
 	return Math.floor(Math.min(maxMemory, totalMemory / totalStreams));
@@ -18,12 +18,16 @@ const doSomeIo = async (fileName, writeStream) => {
 	});
 
 	readStream.on("data", (chunk) => {
-		readStream.highWaterMark = getHighWaterMark();
+		readStream.highWaterMark = 100; //getHighWaterMark();
 
 		const rate = readStream.readableHighWaterMark;
-		progressBar.increment(chunk.length, { fileName,  rate});
-
-	});
+		progressBar.increment(chunk.length, { fileName,  rate });
+  });
+  const pipe = readStream.pipe;
+  readStream.pipe = function(...args) { 
+    console.log(this);
+    pipe.apply(readStream, args);
+  }
 	readStream.pipe(writeStream);
 
 	writeStream.on("finish", () =>{ 
