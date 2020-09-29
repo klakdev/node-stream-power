@@ -1,11 +1,12 @@
+const path = require('path');
 const { readFile } = require("fs");
-const ProgressBar = require('../util/progressBar');
 
-const doSomeIo = async (fileName, writeStream) => {
+const FILE_NAME = path.resolve(__dirname, '../very_large_file.mp4');
 
-	const progressBar = await ProgressBar.create(fileName);
-	readFile(fileName, (err, veryLargeFile) => {
-		progressBar.increment(veryLargeFile.length, { fileName, rate: "Max"});
+const doSomeIo = async (readStream, writeStream) => {
+  writeStream.setHeader("Content-Type", "video/mp4");
+
+	readFile(FILE_NAME, (err, veryLargeFile) => {
 		writeStream.write(veryLargeFile);
 		writeStream.end();
 	});

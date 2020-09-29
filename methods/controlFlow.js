@@ -9,7 +9,13 @@ const getHighWaterMark = () => {
 	return Math.floor(Math.min(maxMemory, totalMemory / totalStreams));
 };
 
-const doSomeIo = async (fileName, writeStream) => {
+/**
+ * 
+ * @param {ReadableStream} _readStream 
+ * @param {WritableStream} writeStream 
+ * @param {string} fileName 
+ */
+const doSomeIo = async (_readStream, writeStream, fileName) => {
 	const progressBar = await ProgressBar.create(fileName);
 	totalStreams++;
 
@@ -18,7 +24,7 @@ const doSomeIo = async (fileName, writeStream) => {
 	});
 
 	readStream.on("data", (chunk) => {
-		readStream.highWaterMark = 100; //getHighWaterMark();
+		readStream._readableState.highWaterMark = 100; //getHighWaterMark();
 
 		const rate = readStream.readableHighWaterMark;
 		progressBar.increment(chunk.length, { fileName,  rate });

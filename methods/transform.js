@@ -1,8 +1,11 @@
 const { createReadStream } = require("fs");
 const Parser = require("stream-json/Parser");
 const { streamArray } = require('stream-json/streamers/StreamArray');
-const { stringify } = require('JSONStream');
+const { stringify  } = require('JSONStream');
 const { Transform } = require("stream");
+const path = require("path");
+
+const FILE_NAME = path.resolve(__dirname, '../large_json.json');
 
 class TransferObjects extends Transform {
 	constructor() {
@@ -20,10 +23,12 @@ class TransferObjects extends Transform {
 	}
 }
 
-const doSomeIo = async (fileName, writeStream) => {
+const doSomeIo = async (readStream, writeStream) => {
 
-	const readStream = createReadStream(fileName);
-	readStream
+	const readFileStream = createReadStream(FILE_NAME, {
+    highWaterMark: 1024,
+  });
+	readFileStream
 		.pipe(new Parser())
 		.pipe(streamArray())
 		.pipe(new TransferObjects())

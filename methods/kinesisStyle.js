@@ -1,43 +1,45 @@
-const { Writable, Transform } = require('stream');
+const { Transform } = require('stream');
+const { createServer } = require("net")
 
 
 class KinesisStyleStream extends Transform {
   constructor(opt) {
-    const _opt = {
+    super({
       ...opt,
-      objectMode: true,
+      defaultEncoding: "utf8",
+      readableObjectMode: true,
+    });
+  }
+
+  _transform(chunk, encoding, cb) {
+    try {
+      const obj = JSON.parse(chunk);
+      if ("object" === typeof obj) {
+        this.push(JSON.stringify(obj));
+        this.push(",");
+      }
     }
-    super(_opt);
+    catch(e) { /*do nothing*/ }
+    cb()
   }
 
-  _transform(chunk, encoding, callback) {
-    console.log(chunk);
-  }
-
-  write(obj) {
-    console.log(obj);
-    this.push(obj);
+  _final() {
+    this.push("]");
   }
 }
 
 const kinesisStream = new KinesisStyleStream()
 
-
-// function doSomeIo(readStream, writeStream) {
-//   const data = [];
-//   readStream.on("data", (chunk) => {
-//     data.push(chunk);
-//   });
-//   readStream.on("end", () => {
-//     const obj = JSON.parse(Buffer.concat(data));
-//     kinesisStream.write(obj);
-//     writeStream.end();
-//   })
-// }
-
 function doSomeIo(readStream, writeStream) {
-  readStream.pipe(kinesisStream);
+  readStream.pipe(kinesisStream, { end: false });
   readStream.on("end", () => writeStream.end());
 }
 
+createServer((socket) => {
+  socket.write("[")
+  kinesisStream.pipe(socket);
+}).listen(8082);
+
+
+ 
 module.exports = doSomeIo;
